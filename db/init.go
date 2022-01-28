@@ -6,11 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Dbinstance struct {
-	Db *gorm.DB
-}
-
-var Database Dbinstance
+var Database *gorm.DB
 
 func InitializeDB() {
 	dsn := "root:password@tcp(127.0.0.1:3306)/samplego"
@@ -19,6 +15,9 @@ func InitializeDB() {
 		panic(err)
 	}
 
-	db.AutoMigrate(&models.User{})
-	Database.Db = db
+	errMigrate := db.AutoMigrate(&models.User{})
+	if err != nil {
+		panic(errMigrate)
+	}
+	Database = db
 }

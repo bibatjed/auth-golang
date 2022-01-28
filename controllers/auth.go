@@ -1,7 +1,7 @@
 package authController
 
 import (
-	database "auth-golang/db"
+	"auth-golang/db"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -26,12 +26,12 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	database.Database.Db.Find(&user, "email = ?", requestBody.Email)
+	initDB.Database.Find(&user, "email = ?", requestBody.Email)
 	if user.ID != 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists"})
 		return
 	}
 
-	database.Database.Db.Create(&requestBody)
+	initDB.Database.Create(&requestBody)
 	c.JSON(http.StatusOK, gin.H{"message": "Success"})
 }
