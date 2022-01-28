@@ -2,16 +2,10 @@ package authController
 
 import (
 	"auth-golang/db"
+	"auth-golang/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
-
-type User struct {
-	ID       uint   `json:"id"`
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Name     string `json:"name" binding:"required"`
-}
 
 func Login(c *gin.Context) {
 
@@ -19,8 +13,8 @@ func Login(c *gin.Context) {
 
 func SignUp(c *gin.Context) {
 
-	var requestBody User
-	var user User
+	var requestBody models.User
+	var user models.User
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -32,6 +26,11 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	initDB.Database.Create(&requestBody)
+	rows := initDB.Database.Create(&requestBody)
+
+	if rows.RowsAffected == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Something wrong"})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Success"})
 }
