@@ -5,11 +5,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
-	ID       uint   `json:"id" gorm:"primaryKey"`
+type LoginFields struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
-	Name     string `json:"name" binding:"required"`
+}
+
+type User struct {
+	ID uint `json:"id" gorm:"primaryKey"`
+	LoginFields
+	Name string `json:"name" binding:"required"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
@@ -20,4 +24,14 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	}
 	u.Password = string(hashedPassword)
 	return
+}
+
+func (u *User) VerifyPassword(password string) bool {
+	// Hashing the password with the default cost of 10
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	if err != nil {
+		return false
+	}
+
+	return true
 }
