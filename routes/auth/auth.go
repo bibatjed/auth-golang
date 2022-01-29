@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"auth-golang/controllers"
+	authController "auth-golang/controllers/auth"
 	"github.com/gin-gonic/gin"
 )
 

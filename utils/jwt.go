@@ -10,7 +10,7 @@ import (
 var secretKey []byte = []byte("test")
 
 type UserInfo struct {
-	ID uint
+	ID uint `json:"id"`
 }
 
 type CustomClaimsExample struct {
@@ -37,4 +37,16 @@ func CreateToken(id uint) (string, error) {
 	}
 
 	return token, nil
+}
+
+func VerifyToken(token string) (uint, error) {
+	verifiedToken, err := jwt.ParseWithClaims(token, &CustomClaimsExample{}, func(jwtToken *jwt.Token) (interface{}, error) {
+		return []byte("test"), nil
+	})
+
+	if claims, ok := verifiedToken.Claims.(*CustomClaimsExample); ok && verifiedToken.Valid {
+		return claims.ID, nil
+	} else {
+		return 0, err
+	}
 }

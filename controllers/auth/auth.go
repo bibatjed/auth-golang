@@ -1,4 +1,4 @@
-package authController
+package auth
 
 import (
 	"auth-golang/db"

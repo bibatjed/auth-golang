@@ -16,6 +16,12 @@ type User struct {
 	Name string `json:"name" binding:"required"`
 }
 
+type UserClean struct {
+	ID    uint   `json:"id" gorm:"primaryKey"`
+	Email string `json:"email" `
+	Name  string `json:"name"`
+}
+
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	// Hashing the password with the default cost of 10
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
@@ -34,4 +40,12 @@ func (u *User) VerifyPassword(password string) bool {
 	}
 
 	return true
+}
+
+func (u *User) ToClean() UserClean {
+	return UserClean{
+		Email: u.Email,
+		ID:    u.ID,
+		Name:  u.Name,
+	}
 }
